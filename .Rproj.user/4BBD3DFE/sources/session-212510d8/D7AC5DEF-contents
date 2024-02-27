@@ -13,7 +13,7 @@ editor_options:
 
 ::: callout-note
 ## Fictional use case
-Example of data analysis with categorical data. In this case randomly regenerated M&A deals with a few attributes : sectors, regions, deal size. Basic exploratory data analysis.
+Example of data analysis with categorical data. We use random generated M&A deals with a few attributes : sectors, regions, deal size. Basic exploratory data analysis.
 :::
 
 # Creating the dataset

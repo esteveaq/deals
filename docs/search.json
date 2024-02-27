@@ -1,0 +1,114 @@
+[
+  {
+    "objectID": "0_Report.html",
+    "href": "0_Report.html",
+    "title": "Report",
+    "section": "",
+    "text": "Fictional use case\n\n\n\nExample of data analysis with categorical data. We use random generated M&A deals with a few attributes : sectors, regions, deal size. Basic exploratory data analysis."
+  },
+  {
+    "objectID": "0_Report.html#load-libraries",
+    "href": "0_Report.html#load-libraries",
+    "title": "Report",
+    "section": "Load libraries",
+    "text": "Load libraries\n\nlibrary(tidyverse)\nlibrary(viridis)\nlibrary(patchwork)\nlibrary(gghighlight)"
+  },
+  {
+    "objectID": "0_Report.html#create-objects",
+    "href": "0_Report.html#create-objects",
+    "title": "Report",
+    "section": "Create objects",
+    "text": "Create objects\n\n# Create and sample random dates\nDatesx <- seq.Date(from = as.Date(\"2014-01-01\"), to = Sys.Date(), by = 1)\nset.seed(123)\nDatesFiles <- sample(Datesx, size = 400, replace = TRUE)\nDatesFiles <- sort(DatesFiles, decreasing = FALSE)\n\n# Create sectors and regions (categorical)\nsectors <- sample(x = c(\"air\", \"space\", \"land\", \"sea\", \"ground\", \"radio\"), size = 400, replace = TRUE, prob=c(0.1, 0.2, 0.30, 0.2, 0.1, 0.2))\nregions <- sample(x = c(\"NAM\", \"LATAM\", \"EMEA\", \"APAC\", \"AUS\"), size = 400, replace = TRUE, prob=c(0.1, 0.2, 0.40, 0.2, 0.1))\n\n# Create deal sizes and revenues (numeric)\ndealsize <- sample(1:1000, size = 400, replace = TRUE)\nrevenues <- round(rnorm(400, 20, 5)^2, 0)"
+  },
+  {
+    "objectID": "0_Report.html#create-data-frame",
+    "href": "0_Report.html#create-data-frame",
+    "title": "Report",
+    "section": "Create data frame",
+    "text": "Create data frame\n\n# create tibbles by combining vectors\nevolution <-\n  tibble(DatesFiles, sectors, regions, dealsize, revenues)\n  \n#convert as character variables to factors\nevolution <-\n  evolution %>%\n  mutate_if(sapply(evolution, is.character), as.factor) %>% \n  print()\n\n# A tibble: 400 × 5\n   DatesFiles sectors regions dealsize revenues\n   <date>     <fct>   <fct>      <int>    <dbl>\n 1 2014-01-13 land    EMEA         180      200\n 2 2014-02-10 ground  LATAM        293      164\n 3 2014-03-17 space   EMEA         896      639\n 4 2014-03-24 space   AUS          539      289\n 5 2014-04-27 land    EMEA         713      573\n 6 2014-05-07 radio   EMEA         211      761\n 7 2014-05-17 space   EMEA         547      363\n 8 2014-05-21 sea     EMEA         930      459\n 9 2014-05-31 radio   APAC         703      126\n10 2014-06-02 land    NAM          343      253\n# ℹ 390 more rows\n\n#filter year\nevolution <-\n  evolution %>%\n  filter(DatesFiles > \"2015-01-01\", \n         DatesFiles < \"2023-01-01\")"
+  },
+  {
+    "objectID": "0_Report.html#set-theme",
+    "href": "0_Report.html#set-theme",
+    "title": "Report",
+    "section": "Set theme",
+    "text": "Set theme\n\ntheme_set(theme_minimal())"
+  },
+  {
+    "objectID": "0_Report.html#using-gghighlight",
+    "href": "0_Report.html#using-gghighlight",
+    "title": "Report",
+    "section": "Using gghighlight",
+    "text": "Using gghighlight\n\n\nCode\nf +\ngghighlight(sectors == \"space\")"
+  },
+  {
+    "objectID": "0_Report.html#using-facets-gghighlight",
+    "href": "0_Report.html#using-facets-gghighlight",
+    "title": "Report",
+    "section": "Using facets + gghighlight",
+    "text": "Using facets + gghighlight\n\n\nCode\n## counting across time\nf + \n  facet_wrap(~sectors)\n\n\n\n\n\n\n\nCode\nf +\n  gghighlight(label_params = list(size = 3)) + #adjust size of labels\n  facet_wrap(~sectors) + \ntheme(\n  strip.text.x = element_blank() #remove titles from facets\n)\n\n\n\n\n\nwith multiple gghighlights :\n\n\nCode\nf +\ngghighlight(sectors %in% c(\"space\", \"radio\"), \n            label_params = list(nudge_x = 2))\n\n\n\n\n\n\n\n\n\n\n\nSome thoughts\n\n\n\n\nFor fun we could try library(geomtextpath)\nFor better reliability we could add labels without using additional packages:  https://stackoverflow.com/questions/29357612/plot-labels-at-ends-of-lines (answered Jul 2, 2018 at 15:57)"
+  },
+  {
+    "objectID": "0_Report.html#summary-stats",
+    "href": "0_Report.html#summary-stats",
+    "title": "Report",
+    "section": "Summary stats",
+    "text": "Summary stats\n\n\nCode\nevolution %>%\n  group_by(sectors) %>%\n  summarize(meandeal = mean(dealsize), \n            mediandeal = median(dealsize), \n            max = max(dealsize), \n            min = min(dealsize), \n            IQR = IQR(dealsize), \n            NBdeals = n()) %>%\n  arrange(mediandeal)\n\n\n# A tibble: 6 × 7\n  sectors meandeal mediandeal   max   min   IQR NBdeals\n  <fct>      <dbl>      <dbl> <int> <int> <dbl>   <int>\n1 sea         463.        435   999    26  506.      62\n2 air         574.        515   967    78  460       27\n3 radio       510.        540   958     2  525       61\n4 space       516.        543   981    11  455.      62\n5 ground      501.        544   978     9  622       33\n6 land        515.        558   993     1  549       88"
+  },
+  {
+    "objectID": "0_Report.html#sum",
+    "href": "0_Report.html#sum",
+    "title": "Report",
+    "section": "Sum",
+    "text": "Sum\nWhich is the most important sector in terms of deal size ?\n\n\nCode\nj <- \nevolution %>%\n  group_by(sectors) %>%\n  summarise(sumdeal = sum(dealsize)) %>%\n  ggplot(mapping = aes(x = fct_reorder(sectors, sumdeal), y = sumdeal)) +\n  geom_col() +\n  geom_text(aes(label = sumdeal), \n                vjust = 2, \n                size = 4,\n                color = \"white\") + \n  labs(x = NULL)\nj +\n  labs(title = \"Sum of deals' value per sector\",\n       subtitle = \"In USD\",\n       x = NULL)"
+  },
+  {
+    "objectID": "0_Report.html#distribution",
+    "href": "0_Report.html#distribution",
+    "title": "Report",
+    "section": "Distribution",
+    "text": "Distribution\nHow are the deals distributed in terms of deal size ?\n\n\nCode\n## Distribution of deal size\nL <-\nevolution %>%\n  ggplot(aes(x = dealsize)) +\n  geom_histogram(binwidth = 20) \nL"
+  },
+  {
+    "objectID": "0_Report.html#density",
+    "href": "0_Report.html#density",
+    "title": "Report",
+    "section": "Density",
+    "text": "Density\n\n\nCode\n## Density of deal size per sector\nm <-\nevolution %>%\n  ggplot(aes(x = dealsize, fill = sectors)) +\n  geom_density(alpha = 0.3) +\n  geom_rug(alpha = 0.6) + #lower part of graph\n  facet_wrap(~sectors)\nm"
+  },
+  {
+    "objectID": "0_Report.html#boxplot",
+    "href": "0_Report.html#boxplot",
+    "title": "Report",
+    "section": "Boxplot",
+    "text": "Boxplot\n\n\nCode\nn <-\nevolution %>%\n  group_by(sectors) %>%\n  mutate(mediandeal = median(dealsize)) %>%\n  ggplot(mapping = aes(x = fct_reorder(sectors, mediandeal), y = dealsize)) +\n  geom_boxplot() +\n  geom_jitter(width = 0.1, alpha = 0.4) +\n  labs(title = \"Deal size distribution per sector\",\n       subtitle = \"In USD\",\n       x = \"Sector\") +\n  coord_flip()\nn\n\n\n\n\n\n\n\nCode\no <-\nevolution %>%\n  group_by(sectors) %>%\n  mutate(mediandeal = median(dealsize)) %>%\n  ggplot(mapping = aes(x = fct_reorder(sectors, mediandeal), y = dealsize)) +\n  geom_boxplot(fill = \"blue3\", alpha = 0.1, color = \"blue3\") +\n  geom_jitter(aes(color = sectors), width = 0.1, alpha = 0.4) +\n  labs(title = \"Deal size distribution per sector\",\n       subtitle = \"In USD\",\n       x = \"Sector\") +\n  guides(color = guide_legend(override.aes = list(size = 5))) + #increase legend items size\n  coord_flip()\no"
+  },
+  {
+    "objectID": "0_Report.html#bubble-charts",
+    "href": "0_Report.html#bubble-charts",
+    "title": "Report",
+    "section": "Bubble charts",
+    "text": "Bubble charts\n\n\nCode\nq <-\nevolution %>%\n  ggplot(aes(x = DatesFiles, y = dealsize, size = (revenues/100))) +\n  geom_point(color= \"gray\", alpha = 0.5)\nq\n\n\n\n\n\n\n\nCode\nr <-\nq +\n  geom_point(data = evolution %>% filter(evolution$sectors == \"radio\"), \n             alpha = 0.5, \n             color = \"magenta\")\nr\n\n\n\n\n\n\n\nCode\ns <-\nq +\n  geom_point(data = evolution %>% filter(evolution$dealsize > 900), \n             alpha = 0.5, \n             color = \"red\")\ns"
+  },
+  {
+    "objectID": "0_Report.html#create-data",
+    "href": "0_Report.html#create-data",
+    "title": "Report",
+    "section": "Create data",
+    "text": "Create data\n\n\nCode\n#get year, month, week\n  weekcount <-\n  evolution %>%\n    mutate(year = year(DatesFiles), \n           month = month(DatesFiles, label = TRUE, abbr= TRUE), \n           wk = week(DatesFiles))\nweekcount\n\n\n# A tibble: 333 × 8\n   DatesFiles sectors regions dealsize revenues  year month    wk\n   <date>     <fct>   <fct>      <int>    <dbl> <dbl> <ord> <dbl>\n 1 2015-01-08 radio   APAC         902      603  2015 Jan       2\n 2 2015-01-09 sea     EMEA         928      429  2015 Jan       2\n 3 2015-01-21 land    APAC         103      170  2015 Jan       3\n 4 2015-02-17 land    AUS          957      246  2015 Feb       7\n 5 2015-04-03 space   APAC         592      368  2015 Apr      14\n 6 2015-04-18 land    EMEA         858     1074  2015 Apr      16\n 7 2015-04-22 space   NAM          400      114  2015 Apr      16\n 8 2015-04-25 radio   APAC           2      658  2015 Apr      17\n 9 2015-05-31 space   EMEA         674      302  2015 May      22\n10 2015-06-10 air     APAC          78      803  2015 Jun      23\n# ℹ 323 more rows"
+  },
+  {
+    "objectID": "0_Report.html#week",
+    "href": "0_Report.html#week",
+    "title": "Report",
+    "section": "Week",
+    "text": "Week\n\n\nCode\n  #plot week intensity for each year with heat map with geom_tile()\n  weekcount %>%\n  group_by(year) %>%\n  count(wk) %>%\n  ggplot(aes(x = wk, y = year, fill = n)) +\n  geom_tile(color=\"white\", linewidth = 0.1) + #use color and size to draw borders\n  coord_equal() + #draw nice squares instead of rectangles \n  scale_fill_viridis(name=\"# Deals\", option = \"plasma\") +\n  theme(\n  panel.background = element_rect(fill = NA, color = NA), # Background of plotting area \n  )"
+  },
+  {
+    "objectID": "0_Report.html#month",
+    "href": "0_Report.html#month",
+    "title": "Report",
+    "section": "Month",
+    "text": "Month\n\n\nCode\n  #plot month intensity for each year with heat map with geom_tile()\nt <-  \nweekcount %>%\n  group_by(year) %>%\n  count(month) %>% #change count to month\n  ggplot(aes(x = month, y = year, fill = n)) + #change x to month\n  geom_tile(color=\"white\", linewidth = 0.1) + #use color and size to draw borders\n  coord_equal() + #draw nice squares instead of rectangles\n  theme(\n  panel.background = element_rect(fill = NA, color = NA)   # Background of plotting area \n  ) + \n  geom_text(aes(label=n), color=\"grey\", size=3) # adding labels\nt"
+  }
+]
