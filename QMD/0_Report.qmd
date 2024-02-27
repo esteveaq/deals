@@ -2,6 +2,7 @@
 title: "Report"
 format:
   html:
+    embed-resources: true
     toc: true
     code-fold: true
     code-block-bg: true
