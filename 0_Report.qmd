@@ -12,9 +12,9 @@ editor_options:
 ---
 
 ::: callout-note
-## Fictional use case
+## Use case
 
-Example of data analysis with categorical data. In this case randmoly regenerated M&A deals with a few variables. Let's do a simple exploratory data analysis to help make data driven decisions.
+Example of data analysis with categorical data. In this case using randomly regenerated M&A deals with a few attributes : sectors, regions, dealsize. Basic exploratory data analysis.
 :::
 
 # Creating the dataset
@@ -399,7 +399,7 @@ L
 ## Density
 
 ```{r}
-## Densité des tailles de Deals par sectors
+## Density of dealsize per sector
 m <-
 evolution %>%
   ggplot(aes(x = dealsize, fill = sectors)) +

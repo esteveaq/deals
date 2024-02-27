@@ -5,9 +5,13 @@ project:
 website:
   title: "Deals"
   navbar:
+    tools:
+      - icon: github
+        href: https://github.com/esteveaq
     left:
       - href: 0_Report.qmd
         text: Report
+    
         
 format:
   html:
@@ -16,4 +20,3 @@ format:
     toc: true
 
 editor: visual
-
